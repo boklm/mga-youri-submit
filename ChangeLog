@@ -1,0 +1,606 @@
+2008-02-19 07:50  pixel
+
+	* lib/Youri/Submit/Action/Unpack.pm: fix "grep_files" handling
+
+2008-02-12 09:42  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: do not make rpmlint errors
+	  fatal anymore (asked by fcrozat)
+
+2008-02-08 17:49  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: remove results occurences and
+	  update doc
+
+2008-02-08 17:48  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: make all rpmlint errors fatal
+
+2008-02-08 17:44  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: removed unneeded parentheses
+
+2008-02-08 17:44  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: make clear
+	  repository/target/define are unused
+
+2008-02-08 17:43  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: use scalar for fd
+
+2008-01-31 16:35  pixel
+
+	* lib/Youri/Submit/Action/Link.pm: also call ->set_arch_changed
+	  when linking a noarch file to another arch
+	  (this still doesn't explain media/media_info/MD5SUM not being
+	  remade, but it
+	  can help...)
+
+2007-12-21 14:37  blino
+
+	* bin/youri-submit.in: merge youri-submit into youri-submit.in
+
+2007-12-19 13:43  blino
+
+	* lib/Youri/Submit/Action/Archive.pm: only log main/updates
+	  modifications, not contrib/updates or non-free/updates which are
+	  legal
+
+2007-12-19 13:37  blino
+
+	* lib/Youri/Submit/Action/Archive.pm: add spuk's debug code for bug
+	  34999
+
+2007-12-17 19:45  blino
+
+	* bin/youri-submit: add an "allow_omitting_packages" global option,
+	  to be able to run youri even if no packages are specified on the
+	  command line (useful if packages are fetched in pre action)
+
+2007-12-17 19:34  blino
+
+	* bin/youri-submit: improve error messages for pres/posts actions
+	  (patch from raoh's copy, probably from warly)
+
+2007-12-17 19:33  blino
+
+	* bin/youri-submit: fix typo about posts actions (patch from raoh's
+	  copy, probably from warly)
+
+2007-12-13 15:01  pixel
+
+	* lib/Youri/Submit/Check/Version.pm: - empty {authorized_users}
+	  doesn't imply every one is allowed to bypass freeze check!
+	  - {authorized_users} should be checked more strictly
+
+2007-12-07 18:26  spuk
+
+	* lib/Youri/Submit/Action/Sendcache.pm: - make Sendcache send debug
+	  packages only if explicitly told to, to save space
+
+2007-11-30 19:29  spuk
+
+	* lib/Youri/Submit/Action/UpdateMdvDb.pm: Youri action to update
+	  the Mandriva maintainers database.
+
+2007-10-04 20:07  blino
+
+	* lib/Youri/Submit/Check/Host.pm: make host reject message more
+	  explicit by print arch (useful when VMware-player for x86_64
+	  actually uses i386 as rpm arch...)
+
+2007-09-26 11:21  blino
+
+	* lib/Youri/Submit/Action/Install.pm: improve log message
+
+2007-09-26 11:19  blino
+
+	* lib/Youri/Submit/Action/Install.pm: fix installed filename (oops)
+
+2007-09-26 09:58  blino
+
+	* lib/Youri/Submit/Action/Install.pm: throw exception on failure,
+	  not to delete files that can be copied because of lack of space
+	  (upstream commit 1398)
+
+2007-09-25 10:49  pixel
+
+	* lib/Youri/Submit/Action/Unpack.pm: allow to unpack only some
+	  files (for release-notes.txt in mandriva-release-common)
+
+2007-09-22 13:11  blino
+
+	* lib/Youri/Submit/Check/Version.pm: allow authorized users to
+	  upload everything even during full freeze
+
+2007-08-31 12:51  pixel
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: handle new rpmlint format
+	  (not useful at the moment since we still use old rpmlint, but may
+	  be useful in
+	  the future)
+
+2007-08-31 10:03  blino
+
+	* lib/Youri/Submit/Action/DkmsModuleInfo.pm: adapt to new
+	  SOURCEPACKAGE value in prebuilt dkms kernel
+
+2007-08-29 13:21  blino
+
+	* lib/Youri/Submit/Action/DkmsModuleInfo.pm: initial
+	  Youri::Submit::Action::DkmsModuleInfo module
+
+2007-08-07 12:50  pixel
+
+	* lib/Youri/Submit/Action/Link.pm: we need the same workaround as
+	  done in Action::Install
+
+2007-07-16 09:27  blino
+
+	* lib/Youri/Submit/Post/Genhdlist2.pm: remove unused variable
+
+2007-07-08 02:44  spuk
+
+	* lib/Youri/Submit/Check/Recency.pm: - check for newer/current
+	  revisions in default section when submitted to another section
+	  (bug #30635)
+
+2007-07-02 09:17  pixel
+
+	* lib/Youri/Submit/Action/CVS.pm: drop mdv specific stuff (mdv
+	  doesn't use this action anymore)
+
+2007-06-28 07:40  pixel
+
+	* lib/Youri/Submit/Action/Link.pm: do update hdlist for every arch
+	  after linking noarch packages (#31638)
+
+2007-06-28 07:37  pixel
+
+	* lib/Youri/Submit/Action/Install.pm: simplify ($arch is not used
+	  by ->set_install_dir_changed)
+
+2007-06-23 13:54  pixel
+
+	* lib/Youri/Submit/Action/Mail.pm, lib/Youri/Submit/Reject/Mail.pm:
+	  keep raw changelogs to avoid changing the format (backport)
+
+2007-06-23 08:10  spuk
+
+	* lib/Youri/Submit/Check/Recency.pm: - check for newer and same
+	  existing revisions in a single pass
+	  - use proper get_revisions() instead of get_install_file() hack,
+	  as the
+	  latter will use the current file name, and thus will fail to
+	  check for an
+	  existing package revision when submitting, because submitted
+	  SRPMs have a
+	  different name ("@rev:foobar-...") than what goes into the
+	  repository
+
+2007-06-22 13:51  pixel
+
+	* lib/Youri/Submit/Post/CleanRpmsrate.pm: ensure we don't do
+	  anything if nothing changed
+
+2007-06-22 13:41  pixel
+
+	* lib/Youri/Submit/Post/Genhdlist2.pm: more atomic generation of
+	  MD5SUM
+
+2007-06-22 13:35  pixel
+
+	* lib/Youri/Submit/Post/Genhdlist2.pm: - need to redo global
+	  MD5SUM. This MD5SUM is mostly obsolete, but is still needed up to
+	  2007.1
+	  (and needed even on cooker for existing urpmi.cfg)
+	  - don't use --blind. hopefully not needed
+
+2007-06-22 06:45  pixel
+
+	* lib/Youri/Submit/Post/Genhdlist2.pm: call genhdlist2 with (new)
+	  option --allow-empty-media
+
+2007-06-21 10:13  blino
+
+	* lib/Youri/Submit/Post/CleanRpmsrate.pm: uniquify arch list
+
+2007-06-21 08:16  pixel
+
+	* lib/Youri/Submit/Action/Install.pm,
+	  lib/Youri/Submit/Post/Genhdlist2.pm: new action Genhdlist2
+
+2007-06-14 18:23  mrl
+
+	* lib/Youri/Submit/Action/Sendcache.pm: - As this action is unique,
+	  avoid too much flexibility and simplify the code.
+	  - Use . for hidding temporary files instead of .new suffix.
+
+2007-06-13 18:36  mrl
+
+	* lib/Youri/Submit/Action/Sendcache.pm: - Adapted for working with
+	  iurt cache.
+
+2007-06-13 01:48  spuk
+
+	* lib/Youri/Submit/Action/Link.pm: no such 'cd' function, 'chdir'
+	  it is...
+
+2007-05-08 06:22  spuk
+
+	* lib/Youri/Submit/Reject/Mail.pm: fixing the Big SVN Breakage:
+	  reverting last commit, restoring state as of latest working
+	  checkout in ken
+
+2007-05-08 06:06  spuk
+
+	* lib/Youri/Submit/Post/Gendistrib.pm: fixing the Big SVN Breakage:
+	  restoring state as of working checkout in ken
+
+2007-05-08 06:00  spuk
+
+	* lib/Youri/Submit/Action/Scp.pm: fixing the Big SVN Breakage:
+	  Scp.pm was changed into Send.pm
+
+2007-05-05 06:16  spuk
+
+	* lib/Youri/Submit/Check/Section.pm: Check if package submission
+	  was for the correct section.
+
+2007-03-24 11:36  spuk
+
+	* lib/Youri/Submit/Action/Archive.pm: - moved hack for verbosity to
+	  start of code, with a remark
+	  - removed double $path from debug string
+
+2007-03-15 12:36  mrl
+
+	* lib/Youri/Submit/Check/Version.pm: - Fixed version_freeze mode:
+	  do not allow any upload with a different version
+	  from what is already present on the repository.
+	  - Added an ACL control for maintainers allowed to bypass this
+	  restriction as option
+	  authorized_users.
+
+2007-03-15 12:32  mrl
+
+	* lib/Youri/Submit/Check/Version.pm: - Improved indentation.
+	  - Added some comments regarding possible bugs in freeze modes.
+
+2005-05-24 14:40  Sawyer
+
+	* lib/Youri/Submit/Reject/Mail.pm: LOST
+
+2007-03-10 07:49  spuk
+
+	* lib/Youri/Submit/Action/Archive.pm: The extra '/' was causing the
+	  string to not be matched by the regexp below
+	  for getting $rep_section and $rep_main_section, in the end making
+	  the SRPMs
+	  of all other subsections be removed when a newer package was
+	  uploaded for any
+	  subsection. (#28719)
+
+2007-02-26 10:56  blino
+
+	* lib/Youri/Submit/Post/CleanRpmsrate.pm: initial
+	  Post::CleanRpmsrate module
+
+2007-02-14 12:10  blino
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: match rpmlint errors that have
+	  no value (such as non-xdg-migrated-menu, the only one we
+	  currently use...)
+
+2007-02-09 22:11  blino
+
+	* bin/youri-submit: get -> get_arg
+
+2007-02-09 22:09  blino
+
+	* bin/youri-submit: merge changes from ken/kenobi
+
+2007-02-09 22:09  blino
+
+	* bin/youri-submit: create youri-submit from youri-submit.in
+
+2007-02-09 19:39  blino
+
+	* lib/Youri/Submit/Check/ACL.pm: add section in acl error message
+
+2007-02-09 19:34  blino
+
+	* lib/Youri/Submit/Reject/Mail.pm: do not use packager adress as
+	  from, it may be invalid (non-free packages) or not subscribed to
+	  maintainers
+
+2007-02-09 18:51  blino
+
+	* lib/Youri/Submit/Reject/Mail.pm: fix changelog in reject mail
+
+2007-02-09 18:50  blino
+
+	* lib/Youri/Submit/Reject/Mail.pm: fix reject mail
+
+2007-02-08 17:28  pixel
+
+	* lib/Youri/Submit/Action/Unpack.pm: also give directories to "cpio
+	  -pdu" to ensure directories are created with same rights
+
+2007-02-08 14:09  pixel
+
+	* lib/Youri/Submit/Action/Unpack.pm: This action plugin unpack
+	  package files somewhere.
+	  When unpack_inside_distribution_root is set, dest_directory is
+	  relative to the distribution root.
+	  When the package is a noarch, the wanted files are unpacked in
+	  distribution root of each archs.
+	  
+	  eg:
+	  unpack_installer_images:
+	  class: Youri::Submit::Action::Unpack
+	  options:
+	  name: drakx-installer-images
+	  source_subdir: /usr/lib*/drakx-installer-images
+	  dest_directory: .
+	  unpack_inside_distribution_root: 1
+
+2007-01-30 10:02  pixel
+
+	* lib/Youri/Submit/Check/ACL.pm, lib/Youri/Submit/Check/Host.pm,
+	  lib/Youri/Submit/Check/Queue_recency.pm,
+	  lib/Youri/Submit/Check/Rpmlint.pm, lib/Youri/Submit/Check/SVN.pm,
+	  lib/Youri/Submit/Check/Source.pm, lib/Youri/Submit/Check/Type.pm,
+	  lib/Youri/Submit/Check/Version.pm, lib/Youri/Submit/Pre/Rsync.pm,
+	  lib/Youri/Submit/Reject/Archive.pm,
+	  lib/Youri/Submit/Reject/Clean.pm,
+	  lib/Youri/Submit/Reject/Install.pm,
+	  lib/Youri/Submit/Reject/Mail.pm: fix $Id$ expansion
+
+2007-01-30 10:01  pixel
+
+	* lib/Youri/Submit/Plugin.pm, lib/Youri/Submit/Post.pm,
+	  lib/Youri/Submit/Pre.pm, lib/Youri/Submit/Reject.pm: fix pod and
+	  $Id$ expansion
+
+2007-01-30 10:00  pixel
+
+	* lib/Youri/Submit/Post.pm: fix pod
+
+2007-01-30 09:59  pixel
+
+	* lib/Youri/Submit/Action/Send.pm: fix pod
+
+2007-01-30 09:58  pixel
+
+	* lib/Youri/Submit/Action/Markrelease.pm,
+	  lib/Youri/Submit/Action/Scp.pm: fix pod
+
+2007-01-30 09:49  pixel
+
+	* lib/Youri/Submit/Action/Clean.pm,
+	  lib/Youri/Submit/Action/Link.pm,
+	  lib/Youri/Submit/Action/Markrelease.pm,
+	  lib/Youri/Submit/Action/Rpminfo.pm,
+	  lib/Youri/Submit/Action/Scp.pm, lib/Youri/Submit/Action/Send.pm:
+	  fix $Id$ expansion
+
+2007-01-26 11:25  blino
+
+	* lib/Youri/Submit/Check/ACL.pm: really match section in ACL
+
+2007-01-26 11:24  blino
+
+	* lib/Youri/Submit/Check/ACL.pm: fix arch ACL matching (and thus
+	  allow ACLs to match again)
+
+2006-12-24 10:31  mandrake
+
+	* lib/Youri/Submit/Post.pm, lib/Youri/Submit/Pre.pm,
+	  lib/Youri/Submit/Reject.pm: Removing previous pristine/
+	  directory.
+
+2006-12-24 03:15  mandrake
+
+	* lib/Youri/Submit/Action.pm: %repsys markrelease
+	  version: 1.0
+	  release: 0.20061223.3mdv2007.1
+	  revision: 101968
+	  
+	  Copying 1.0-0.20061223.3mdv2007.1 to releases/ directory.
+
+2006-10-16 16:05  warly
+
+	* lib/Youri/Submit/Check.pm: merging dev with upstream
+
+2006-11-14 22:01  mrl
+
+	* lib/Youri/Submit/Action/Rpminfo.pm: - Renamed package name tag.
+
+2006-11-14 16:38  mrl
+
+	* lib/Youri/Submit/Action/RpmInfo.pm,
+	  lib/Youri/Submit/Action/Rpminfo.pm: - Renamed, due to some
+	  enforcement (cfengine?).
+
+2006-11-14 13:23  mrl
+
+	* lib/Youri/Submit/Action/RpmInfo.pm: - Added package summary to
+	  .info files.
+
+2006-11-13 12:40  mrl
+
+	* lib/Youri/Submit/Action/RpmInfo.pm: - First version of web
+	  interface.
+
+2006-10-31 11:40  mandrake
+
+	* lib/Youri/Submit/Action/Archive.pm: unlink file in Archive for
+	  the moment (should be done in clean but the code to detect which
+	  packages is obsoleted has to be moved
+
+2006-10-26 11:26  mandrake
+
+	* lib/Youri/Submit/Action/CVS.pm: we perform CVS commit
+	  asynchronously
+
+2006-10-26 11:21  mandrake
+
+	* lib/Youri/Submit/Action/Install.pm: rename the rpm to remove the
+	  prefix
+
+2006-10-26 11:18  mandrake
+
+	* lib/Youri/Submit/Action/Mail.pm: fix double .
+
+2006-10-26 11:16  mandrake
+
+	* lib/Youri/Submit/Post/Gendistrib.pm: add gendistrib command
+	  directly into gendistrib module
+
+2006-10-26 11:14  mandrake
+
+	* lib/Youri/Submit/Pre/Rsync.pm: return correct packages table for
+	  groups
+
+2006-10-26 11:10  mandrake
+
+	* lib/Youri/Submit/Reject/Install.pm: get_reject_path seems to be
+	  the new name
+
+2006-10-26 11:07  mandrake
+
+	* lib/Youri/Submit/Reject/Mail.pm: $last_change is sometime empty
+
+2006-10-24 11:07  warly
+
+	* bin/youri-submit.in: exit with an error code if an error occured
+	  in one group; s/Upload/Submit/; use new structure name from
+	  upstream
+
+2006-10-23 11:48  warly
+
+	* lib/Youri/Submit/Check/ACL.pm,
+	  lib/Youri/Submit/Check/Queue_recency.pm,
+	  lib/Youri/Submit/Check/Rpmlint.pm, lib/Youri/Submit/Check/SVN.pm,
+	  lib/Youri/Submit/Check/Source.pm,
+	  lib/Youri/Submit/Check/Version.pm: must return an empty value
+
+2006-10-18 12:46  warly
+
+	* lib/Youri/Submit/Check/Rpmlint.pm: remove debug code
+
+2006-10-17 16:10  warly
+
+	* lib/Youri/Submit/Check/ACL.pm: now checks must return the error
+	  message
+
+2006-10-17 16:04  warly
+
+	* lib/Youri/Submit/Check/ACL.pm, lib/Youri/Submit/Check/Host.pm,
+	  lib/Youri/Submit/Check/Queue_recency.pm,
+	  lib/Youri/Submit/Check/Rpmlint.pm, lib/Youri/Submit/Check/SVN.pm,
+	  lib/Youri/Submit/Check/Source.pm,
+	  lib/Youri/Submit/Check/Version.pm: now checks must return the
+	  error message
+
+2006-10-17 15:16  warly
+
+	* lib/Youri/Submit/Action/Clean.pm,
+	  lib/Youri/Submit/Action/Link.pm, lib/Youri/Submit/Check/ACL.pm,
+	  lib/Youri/Submit/Check/Host.pm,
+	  lib/Youri/Submit/Check/Queue_recency.pm,
+	  lib/Youri/Submit/Check/SVN.pm, lib/Youri/Submit/Check/Source.pm,
+	  lib/Youri/Submit/Check/Type.pm,
+	  lib/Youri/Submit/Check/Version.pm, lib/Youri/Submit/Post.pm,
+	  lib/Youri/Submit/Pre.pm, lib/Youri/Submit/Reject.pm:
+	  s/Upload/Submit/g
+
+2006-10-17 13:53  warly
+
+	* ., ChangeLog, MANIFEST.SKIP, Makefile.PL, README, TODO,
+	  bin/youri-submit-proxy.in, bin/youri-submit-restricted.in,
+	  bin/youri-submit.in, etc, etc/bash_completion.d,
+	  etc/bash_completion.d/youri-submit, etc/submit.conf,
+	  lib/Youri/Submit/Plugin.pm, t, t/00distribution.t: merge with
+	  upstream
+
+2006-10-16 16:27  warly
+
+	* lib/Youri/Submit/Post/Gendistrib.pm,
+	  lib/Youri/Submit/Pre/Rsync.pm,
+	  lib/Youri/Submit/Reject/Archive.pm,
+	  lib/Youri/Submit/Reject/Clean.pm,
+	  lib/Youri/Submit/Reject/Install.pm,
+	  lib/Youri/Submit/Reject/Mail.pm: Now the module is Submit and not
+	  Upload
+
+2006-10-16 16:26  warly
+
+	* lib/Youri/Submit/Check, lib/Youri/Submit/Check/History.pm,
+	  lib/Youri/Submit/Check/Precedence.pm,
+	  lib/Youri/Submit/Check/Recency.pm,
+	  lib/Youri/Submit/Check/Rpmlint.pm, lib/Youri/Submit/Check/Tag.pm,
+	  lib/Youri/Submit/Check/Type.pm: merging dev with upstream
+
+2006-10-16 16:15  warly
+
+	* lib/Youri/Submit/Post.pm, lib/Youri/Submit/Pre.pm,
+	  lib/Youri/Submit/Reject.pm: now plugins are complete abstract
+	  classes
+
+2006-10-16 16:08  warly
+
+	* lib/Youri/Submit/Action.pm: merging dev with upstream
+
+2006-10-16 16:05  warly
+
+	* lib/Youri/Submit/Check.pm: merging dev with upstream
+
+2006-10-16 13:03  warly
+
+	* lib/Youri/Submit/Action/Markrelease.pm,
+	  lib/Youri/Submit/Action/Scp.pm, lib/Youri/Submit/Action/Send.pm:
+	  Now the Module is Submit
+
+2006-10-16 12:57  warly
+
+	* lib/Youri/Submit/Action, lib/Youri/Submit/Action/Archive.pm,
+	  lib/Youri/Submit/Action/Bugzilla.pm,
+	  lib/Youri/Submit/Action/CVS.pm, lib/Youri/Submit/Action/Clean.pm,
+	  lib/Youri/Submit/Action/Install.pm,
+	  lib/Youri/Submit/Action/Link.pm, lib/Youri/Submit/Action/Mail.pm,
+	  lib/Youri/Submit/Action/RSS.pm, lib/Youri/Submit/Action/Sign.pm:
+	  merging dev with upstream
+
+2006-10-16 11:33  warly
+
+	* bin/youri-check.in: add new youri subsections (from upstream)
+
+2006-10-16 11:30  warly
+
+	* lib/Youri/Submit: add new youri subsections (from upstream)
+
+2006-10-16 11:30  warly
+
+	* lib/Youri: add new youri subsections (from upstream)
+
+2006-10-16 11:30  warly
+
+	* lib: add new youri subsections (from upstream)
+
+2006-10-16 11:22  warly
+
+	* bin/youri-submit.in: add new youri subsections (from upstream)
+
+2006-10-16 11:18  warly
+
+	* bin: add new youri subsections (from upstream)
+
+2006-10-16 11:18  warly
+
+	* .: add new youri subsections (from upstream)
+
+2006-04-23 Guillaume Rousse <guillomovitch@zarb.org> 0.9
+	* initial release

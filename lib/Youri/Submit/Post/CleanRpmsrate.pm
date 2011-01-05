@@ -1,0 +1,53 @@
+# $Id: CleanRpmsrate.pm 115367 2007-01-30 09:47:04Z pixel $
+package Youri::Submit::Post::CleanRpmsrate;
+
+=head1 NAME
+
+Youri::Submit::Post::CleanRpmsrate - calls clean-rpmsrate
+
+=head1 DESCRIPTION
+
+Calls clean-rpmsrate
+
+=cut
+
+use warnings;
+use strict;
+use Carp;
+use base qw/Youri::Submit::Post/;
+
+#- inlined from MDK::Common::DataStructure
+sub uniq { my %l; $l{$_} = 1 foreach @_; grep { delete $l{$_} } @_ }
+
+sub _init {
+}
+
+sub run {
+    my ($self, $repository, $target, $define) = @_;
+    croak "Not a class method" unless ref $self;
+    my $root = $repository->get_install_root();
+    my @changed = @{$repository->get_arch_changed($target)};
+    if (grep { $_ eq 'i586' } @changed) {
+	# x86_64 uses i586 pkgs, so rpmsrate need to be rebuild
+	@changed = uniq(@changed, 'x86_64');
+    }
+    foreach my $arch (@changed) {
+	my $rpmsrate = "$root/$target/$arch/media/media_info/rpmsrate";
+	my @media = "$root/$target/$arch/media/main/release";
+	system("cp", "$rpmsrate-raw", "$rpmsrate-new");
+	system("clean-rpmsrate", "$rpmsrate-new", @media);
+	system("mv", "-f", "$rpmsrate-new", $rpmsrate);
+    }
+    return
+}
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2007, Mandriva <blino@mandriva.com>
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+1;
+

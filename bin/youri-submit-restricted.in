@@ -1,0 +1,64 @@
+#!/usr/bin/perl -T
+
+=head1 NAME
+
+youri-submit-restricted - filtering wrapper over youri-submit
+
+=head1 VERSION
+
+Version 1.0
+
+=head1 SYNOPSIS
+
+youri-submit-restricted [options] <target> <files>
+
+=head1 DESCRIPTION
+
+youri-submit-restricted is just a filtering wrapper over youri-submit, intended
+to be used in collaborative work to sanitize environment and options before
+calling it.
+
+=head1 SEE ALSO
+
+youri-submit(1)
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2002-2006, YOURI project
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+use strict;
+use warnings;
+
+my $prog = '@bindir@/youri-submit';
+my @prohibited_options = qw/--config --skip-check --skip-action/;
+my %prohibited_options = map { $_ => 1 } @prohibited_options;
+my @prohibited_envvars = qw/
+    ENV BASH_ENV IFS CDPATH
+    PERLLIB PERL5LIB PERL5OPT PERLIO
+    PERLIO_DEBUG PERL5DB PERL_ENCODING
+    PERL_HASH_SEED PERL_SIGNALS PERL_UNICODE
+/;
+
+my @options;
+while (my $arg = shift @ARGV) {
+    if ($prohibited_options{$arg}) {
+        # drop prohibited options
+        print STDERR "prohibited option $arg, skipping\n";
+        shift @ARGV;
+    } else {
+        # untaint everything else
+        $arg =~ /(.*)/;
+        push(@options, $1);
+    }
+}
+
+# secure ENV
+$ENV{PATH} = "/sbin:/usr/sbin:/bin:/usr/bin:/usr/X11R6/bin";
+delete $ENV{$_} foreach @prohibited_envvars;
+
+# call wrapped program
+system($prog, @options);

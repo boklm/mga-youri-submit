@@ -1,0 +1,6 @@
+1.0 Goals 
+=========
+
+- svn support
+- automatic bugzilla ticket closing on upload
+- more customizable (template based ?) mail notification

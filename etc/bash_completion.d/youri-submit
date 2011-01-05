@@ -1,0 +1,60 @@
+# youri-submit completion
+# $Id$
+
+_youri-submit()
+{
+
+    local cur prev config
+
+    COMPREPLY=()
+    cur=${COMP_WORDS[COMP_CWORD]}
+    prev=${COMP_WORDS[COMP_CWORD-1]}
+
+    case "$prev" in
+	--config)
+	    _filedir
+	    return 0
+	    ;;
+	--list)
+	    COMPREPLY=( $( compgen -W 'targets checks actions' -- $cur ) )
+	    return 0
+	    ;;
+	--help)
+	    COMPREPLY=( $( compgen -W 'repository check action' -- $cur ) )
+	    return 0
+	    ;;
+    esac
+
+    if [[ "$cur" == -* ]]; then
+	COMPREPLY=( $( compgen -W '--define --clean -l --list -h --help -t \
+	    --test -v --verbose' -- $cur ) )
+	# add dangereous option for main command
+	if [[ ${COMP_WORDS[0]} == youri-submit ]]; then
+	    COMPREPLY=( $( compgen -W '${COMPREPLY[@]} --config --skip-check \
+		--skip-action' -- $cur ) )
+	fi
+    else
+    	_count_args
+	case $args in
+	    1)
+		_find_config
+		COMPREPLY=( $( compgen -W '$( youri-submit $config --list targets )' -- $cur ) )
+		;;
+	    *)
+		_filedir
+		;;
+	esac
+    fi
+
+}
+complete -F _youri-submit youri-submit youri-submit-restricted youri-submit-proxy
+
+_find_config()
+{
+    for (( i=1; i < COMP_CWORD; i++ )); do
+	if [[ "${COMP_WORDS[i]}" == --config ]]; then
+	    config="--config ${COMP_WORDS[i+1]}"
+	    break
+	fi
+    done
+}

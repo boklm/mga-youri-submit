@@ -1,0 +1,77 @@
+#!/usr/bin/perl
+
+=head1 NAME
+
+youri-submit-proxy - proxy wrapper over youri-submit-restricted
+
+=head1 VERSION
+
+Version 1.0
+
+=head1 SYNOPSIS
+
+youri-submit-proxy [options] <target> <files>
+
+=head1 DESCRIPTION
+
+youri-submit-proxy is a proxy wrapper over youri-submit-restricted, intended to
+be used in collaborative work to change uid before calling it through sudo.
+
+=head1 SEE ALSO
+
+youri-submit-restricted(1), youri-submit(1)
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2002-2006, YOURI project
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+use strict;
+use warnings;
+use Fcntl ':mode';
+use File::Basename;
+
+my ($uid, $gid);
+if (-l $0) {
+    # this is a symlink, get uid and gid from it
+    ($uid, $gid) = (lstat($0))[4, 5];
+} else {
+    ($uid, $gid) = (stat($0))[4, 5];
+}
+my $user = getpwuid($uid) or die "unknown uid $uid";
+my $prog = '@bindir@/youri-submit-restricted';
+
+my %dirs;
+my @options;
+foreach my $arg (@ARGV) {
+    if (-f $arg) {
+        # push parent dir in list
+        my $parent = dirname($arg);
+        $dirs{$parent}++;
+    }
+    push(@options, $arg);
+}
+
+foreach my $dir (keys %dirs) {
+    # save original perms and gid
+    my ($orig_mode, $orig_gid) = (stat($dir))[2,5];
+    $dirs{$dir} = {
+        mode => $orig_mode,
+        gid => $orig_gid
+    };
+    # ensure correct perms and gid
+    chown -1, $gid, $dir;
+    chmod $orig_mode|S_IRGRP|S_IWGRP, $dir;
+}
+
+# call wrapped program
+system('sudo', '-H', '-u', $user, $prog, @options);
+
+foreach my $dir (keys %dirs) {
+    # restore original perms and gid
+    chown -1, $dirs{$dir}->{gid}, $dir;
+    chmod $dirs{$dir}->{mode}, $dir;
+}

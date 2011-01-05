@@ -1,0 +1,534 @@
+#!/usr/bin/perl
+# $Id: youri-submit.in 232668 2007-12-21 14:37:04Z blino $
+
+=head1 NAME
+
+youri-submit - package submission tool
+
+=head1 VERSION
+
+Version 2.0
+
+=head1 SYNOPSIS
+
+youri-submit [options] <target> <files>
+
+youri-submit --list <category> [target]
+
+youri-submit --help [category] [item]
+ 
+Options:
+
+    --config <file>        use file <file> as config file
+    --skip-pre <pre>       skip pre <pre>
+    --skip-check <check>   skip check <check>
+    --skip-action <action> skip action <action>
+    --skip-post <post>     skip post <post>
+    --skip-reject <reject> skip reject <reject>
+    --define <key>=<value> pass additional values
+    --clean                delete package after success
+    --verbose              verbose run
+    --test                 test run
+    --list <category>      list items from given category
+    --help [category]      display contextual help
+
+=head1 DESCRIPTION
+
+B<youri-submit> allows to submit packages to a repository.
+
+All packages given on command lines are passed to a list of check plugins,
+depending on given upload target. If none of them fails, all packages are
+passed to a list of action plugins, depending also on given upload target.
+
+=head1 OPTIONS
+
+=over
+
+=item B<--config> I<file>
+
+Use given file as configuration, instead of normal one.
+
+=item B<--skip-pre> I<id>
+
+Skip pre transaction plugin with given identity
+
+=item B<--skip-check> I<id>
+
+Skip check plugin with given identity.
+
+=item B<--skip-action> I<id>
+
+Skip action plugin with given identity.
+
+=item B<--skip-post> I<id>
+
+Skip post transaction plugin with given identity.
+
+=item B<--skip-reject> I<id>
+
+Skip reject action plugin with given identity.
+
+=item B<--define> <key>=<value>
+
+Define additional parameters, to be used by plugins.
+
+=item B<--clean>
+
+Delete submited packages upon successfull submission.
+
+=item B<--verbose>
+
+Produce more verbose output (can be used more than once)
+
+=item B<--test>
+
+Don't perform any modification.
+
+=item B<--list> I<category>
+ 
+List available items from given category and exits. Category must be either
+B<targets>, B<actions> or B<checks>. A target is needed for the two last ones.
+ 
+=item B<--help> I<category>
+ 
+Display help for given category and exits. Category must be either
+B<repository>, B<action> or B<check>. An item is needed for the two last ones.
+If no category given, display standard help.
+
+=back
+
+=head1 CONFIGURATION
+
+Configuration is read from the first file found among:
+
+=over
+
+=item * the one specified by B<--config> option on command-line
+
+=item * $HOME/.youri/submit.conf
+ 
+=item * /usr/local/etc/youri/submit.conf
+
+=back
+
+The configuration file should be a YAML-format files, with the following
+mandatory top-level directives:
+
+=over
+
+=item B<repository>
+
+The definition of repository plugin to be used.
+
+=item B<targets>
+
+The list of available submission targets, each one being composed from the
+following keys:
+
+=over
+
+=item B<checks>
+
+The list of check plugins to use for this target.
+
+=item B<actions>
+
+The list of action plugins to use for this target.
+
+=back
+
+=item B<checks>
+
+The list of check plugin definitions, indexed by their identity.
+
+=item B<actions>
+ 
+The list of action plugin definitions, indexed by their identity.
+
+=back
+
+=head1 SEE ALSO
+
+Youri::Config, for additional details about configuration file format.
+
+Each used plugin man page, for available options.
+
+=head1 COPYRIGHT AND LICENSE
+
+Copyright (C) 2002-2006, YOURI project
+
+This program is free software; you can redistribute it and/or modify it under the same terms as Perl itself.
+
+=cut
+
+use strict;
+use warnings;
+
+use Youri::Config;
+use Youri::Utils;
+use Pod::Usage;
+
+my $config = Youri::Config->new(
+    args => {
+        'skip-check'  => '=s@',
+        'skip-action' => '=s@',
+        'define'      => '=s%',
+        'verbose'     => '|v!',
+        'clean'       => '!',
+        'test'        => '|t!',
+        'list'        => '|l!',
+        'config'      => '=s',
+        'skip-prei'   => '=s@',
+        'skip-post'   => '=s@',
+        'skip-reject' => '=s@',
+    },
+    directories => [ "$ENV{HOME}/.youri", '@sysconfdir@/youri' ],
+    file => 'submit.conf',
+);
+
+if ($config->get_arg('list')) {
+    my $category = $ARGV[0];
+    pod2usage(-verbose => 0, -message => "No category specified, aborting\n")
+        unless $category;
+    if ($category eq 'targets') { 
+        print join(' ', keys %{$config->get_param('targets')});
+    } elsif ($category eq 'checks' || $category eq 'actions') {
+        my $target = $ARGV[1];
+        pod2usage(-verbose => 0, -message => "No target specified, aborting\n")
+            unless $target;
+        if ($category eq 'checks') {
+            my $checks = $config->get_param('targets')->{$target}->{checks};
+            print join(' ', @{$checks}) if $checks;
+        } else {
+            my $actions = $config->get_param('targets')->{$target}->{actions};
+            print join(' ', @{$actions}) if $actions;
+        }
+    } else {
+        pod2usage(-verbose => 0, -message => "Invalid category $category, aborting\n")
+    }
+    print "\n";
+    exit 0;
+}
+
+if ($config->get_arg('help')) {
+    my $category = $ARGV[0];
+    my ($item, $section);
+    if ($category eq 'repository') { 
+        $section = $config->get_param('repository');
+        pod2usage(
+            -verbose => 0,
+            -message => "No repository defined, aborting\n"
+        ) unless $section;
+    } elsif ($category eq 'check' || $category eq 'action') {
+        $item = $ARGV[1];
+        pod2usage(
+            -verbose => 0,
+            -message => "No item specified, aborting\n"
+        ) unless $item;
+        if ($category eq 'check') {
+            $section = $config->get_param('checks')->{$item};
+            pod2usage(
+                -verbose => 0,
+                -message => "No such check $item defined, aborting\n"
+            ) unless $section;
+        } else  {
+            $section = $config->get_param('actions')->{$item};
+            pod2usage(
+                -verbose => 0,
+                -message => "No such action $item defined, aborting\n"
+            ) unless $section;
+        }
+    } else {
+        pod2usage(-verbose => 0, -message => "Invalid category $category, aborting\n")
+    }
+    my $file = $section->{class} . '.pm';
+    $file =~ s/::/\//g;
+    pod2usage(
+        -verbose  => 99,
+        -sections => 'NAME|DESCRIPTION',
+        -input    => $file,
+        -pathlist => \@INC
+    );
+}
+
+
+pod2usage(-verbose => 0, -message => "No target specified, aborting\n")
+    unless @ARGV > 0;
+pod2usage(-verbose => 0, -message => "No packages specified, aborting\n")
+    unless @ARGV > 1 || $config->get_param('allow_omitting_packages');
+
+# convenient global flags
+my $test    = $config->get_arg('test');
+my $verbose = $config->get_arg('verbose');
+
+# check target
+my $target = shift @ARGV;
+my $target_conf = $config->get_param('targets')->{$target};
+
+# create repository
+my $repository;
+my $repository_conf = $config->get_param('repository');
+die "No repository declared" unless $repository_conf;
+print "Creating repository\n" if $verbose;
+eval {
+    $repository = create_instance(
+        'Youri::Repository',
+        $repository_conf,
+        {
+            test    => $test,
+            verbose => $verbose > 0 ? $verbose - 1 : 0,
+            targets => [ keys %{$config->get_param('targets')} ],
+        }
+    );
+};
+die "Failed to create repository: $@\n" if $@;
+
+# perfrom pre action
+my @errors;
+my $pre_packages = [];
+my $skip_pres = $config->get_arg('skip-pre');
+my %skip_pres = $skip_pres ?  map { $_ => 1 } @{$skip_pres} : ();
+foreach my $id (@{$target_conf->{pres}}) { 
+    next if $skip_pres{$id};
+    print "Creating pre $id\n" if $verbose;
+    my $pre;
+    my $pre_conf = $config->get_param('pres')->{$id};
+
+    if (!$pre_conf) {
+	print STDERR "No such pre $id, skipping\n";
+	next;
+    }
+    eval {
+	$pre = create_instance(
+	    'Youri::Submit::Pre',
+	    $pre_conf,
+	    {
+		id       => $id,
+		test     => $test,
+		verbose  => $verbose > 0 ? $verbose - 1 : 0,
+	    }
+	);
+    };
+    if ($@) {
+	print STDERR "Failed to create pre $id: $@\n";
+    } else {
+	print "running pre $id\n" if $verbose;
+	my @err = $pre->run(
+	    $pre_packages,
+	    $repository,
+	    $target,
+	    $config->get_arg('define')
+	);
+	push(@errors, @err) if $err[0];
+    }
+}
+
+if (@errors) {
+    print "Pre-submission errors, aborting:\n";
+    foreach my $error (@errors) {
+	print " - $error\n";
+    }
+    exit(1)
+}
+
+# create packages group
+my $group_error;
+my @packages_group;
+foreach my $group ([ map { { section => "", file => $_ } } @ARGV ], @$pre_packages) {
+    my @packages;
+    foreach my $opt (@$group) {
+	print "Preparing upload for $opt->{file} in $opt->{section}\n" if $verbose;
+	$repository->{packages}{$opt->{file}}{section} = $opt->{section};
+	push(
+	    @packages,
+	    create_instance(
+		'Youri::Package',
+		{
+		    class => $repository->get_package_class(),
+		},
+		{
+		    file => $opt->{file},
+		    %$opt
+		},
+	    )
+	);
+    }
+    @packages or next;
+
+# check all packages pass all tests
+    my %errors;
+    my $skip_check = $config->get_arg('skip-check');
+    my %skip_check = $skip_check ?  map { $_ => 1 } @{$skip_check} : ();
+    my @error;
+    foreach my $id (@{$target_conf->{checks}}) {
+	next if $skip_check{$id};
+	print "Creating check $id\n" if $verbose;
+	my $check;
+	my $check_conf = $config->get_param('checks')->{$id};
+
+	if (!$check_conf) {
+	    print STDERR "No such check $id, skipping\n";
+	    next;
+	}
+	eval {
+	    $check = create_instance(
+		'Youri::Submit::Check',
+		$check_conf,
+		{ 
+		    id       => $id,
+		    test     => $test,
+		    verbose  => $verbose > 0 ? $verbose - 1 : 0,
+		}
+	    );
+	};
+	if ($@) {
+	    print STDERR "Failed to create check $id: $@\n";
+	} else {
+	    foreach my $package (@packages) {
+		print "running check $id on package $package\n" if $verbose;
+		my @errors = $check->run(
+		    $package,
+		    $repository,
+		    $target,
+		    $config->get_arg('define')
+		);
+		push(@{$errors{$package}}, @errors) if $errors[0];
+	    }
+	}
+    }
+    if (%errors) {
+	print "Submission errors, aborting:\n";
+	foreach my $package (keys %errors) {
+	    print "- $package:\n";
+	    foreach my $error (@{$errors{$package}}) {
+		print " - $error\n";
+	    }
+	}
+	# reject the packages
+	my $skip_rejects = $config->get_arg('skip-reject');
+	my %skip_rejects = $skip_rejects ?  map { $_ => 1 } @{$skip_rejects} : ();
+	foreach my $id (@{$target_conf->{rejects}}) {
+	    next if $skip_rejects{$id};
+	    print "Creating reject $id\n" if $verbose;
+	    my $reject;
+	    my $reject_conf = $config->get_param('rejects')->{$id};
+	
+	    if (!$reject_conf) {
+		print STDERR "No such reject $id, skipping\n";
+		next;
+	    }
+	    eval {
+		$reject = create_instance(
+		    'Youri::Submit::Reject',
+		    $reject_conf,
+		    {
+			id       => $id,
+			test     => $test,
+			verbose  => $verbose > 0 ? $verbose - 1 : 0,
+		    }
+		);
+	    };
+	    if ($@) {
+		print STDERR "Failed to create reject $id: $@\n";
+	    } else {
+		foreach my $package (@packages) {
+		    print "running reject $id on package $package\n" if $verbose;
+		    eval {
+			$reject->run($package, \%errors, $repository, $target, $config->get_arg('define'));
+		    };
+		    if ($@) {
+			print STDERR "Failed to run action $id on package $package: $@\n";
+		    }
+		}
+	    }
+	}
+	$group_error = 1;
+	next
+    } 
+
+# proceed further
+    my $skip_action = $config->get_arg('skip-action');
+    my %skip_action = $skip_action ?  map { $_ => 1 } @{$skip_action} : ();
+    foreach my $id (@{$target_conf->{actions}}) {
+	next if $skip_action{$id};
+	print "Creating action $id\n" if $verbose;
+	my $action;
+	my $action_conf = $config->get_param('actions')->{$id};
+
+	if (!$action_conf) {
+	    print STDERR "No such action $id, skipping\n";
+	    next;
+	}
+	eval {
+	    $action = create_instance(
+		'Youri::Submit::Action',
+		$action_conf,
+		{
+		    id       => $id,
+		    test     => $test,
+		    verbose  => $verbose > 0 ? $verbose - 1 : 0,
+		}
+	    );
+	};
+	if ($@) {
+	    print STDERR "Failed to create action $id: $@\n";
+	} else {
+	    foreach my $package (@packages) {
+		print "running action $id on package $package\n" if $verbose;
+		eval {
+		    $action->run(
+			$package,
+			$repository,
+			$target,
+			$config->get_arg('define')
+		    );
+		};
+		if ($@) {
+		    print STDERR "Failed to run action $id on package $package: $@\n";
+		}
+	    }
+	}
+    }
+
+    if ($config->get_arg('clean')) {
+	foreach my $package (@packages) {
+	    print "cleaning file $package\n" if $verbose;
+	    unlink $package->as_file();
+	}
+    }
+}
+
+# perfrom post action
+my $skip_post = $config->get_arg('skip-post');
+my %skip_post = $skip_post ?  map { $_ => 1 } @{$skip_post} : ();
+foreach my $id (@{$target_conf->{posts}}) {
+    next if $skip_post{$id};
+    print "Creating post $id\n" if $verbose;
+    my $post;
+    my $post_conf = $config->get_param('posts')->{$id};
+
+    if (!$post_conf) {
+	print STDERR "No such post $id, skipping\n";
+	next;
+    }
+    eval {
+	$post = create_instance(
+	    'Youri::Submit::Post',
+	    $post_conf,
+	    { 
+		id       => $id,
+		test     => $test,
+		verbose  => $verbose > 0 ? $verbose - 1 : 0,
+	    }
+	);
+    };
+    if ($@) {
+	print STDERR "Failed to create post $id: $@\n";
+    } else {
+	print "running post $id\n" if $verbose;
+	my @err = $post->run($repository, $target, $config->get_arg('define'));
+	print STDERR "Error $id: @err\n" if @err
+    }
+}
+
+exit(1) if $group_error;
