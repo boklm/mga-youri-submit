@@ -14,6 +14,7 @@ This action plugin ensures installation of new package revisions.
 use warnings;
 use strict;
 use Carp;
+use File::Basename;
 use base qw/Youri::Submit::Action/;
 
 sub _init {
@@ -33,7 +34,7 @@ sub run {
     croak "Not a class method" unless ref $self;
 
     my $file = $package->as_file();
-    my $rpm = $package->get_file_name();
+    my $rpm = basename($package->get_file_name());
     my $dest = $repository->get_install_dir($package, $target, $define);
 
     # FIXME remove prefix this should be done by a function
