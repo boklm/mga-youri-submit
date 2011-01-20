@@ -9,7 +9,8 @@ WriteMakefile(
     EXE_FILES  => [
         'bin/youri-submit',
         'bin/youri-submit-restricted',
-        'bin/youri-submit-proxy'
+        'bin/youri-submit-proxy',
+	'bin/mga-signpackage'
         ],
     PREREQ_PM  => {
         'Youri::Config'          => 0,
