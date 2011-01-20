@@ -19,6 +19,8 @@ use base qw/Youri::Submit::Action/;
 sub _init {
     my $self   = shift;
     my %options = (
+	signuser   => 'signbot',
+	signscript => '/usr/bin/mga-signpackage',
         name       => '',
         path       => $ENV{HOME} . '/.gnupg',
         passphrase => '',
@@ -32,17 +34,17 @@ sub _init {
     $self->{_name}       = $options{name};
     $self->{_path}       = $options{path};
     $self->{_passphrase} = $options{passphrase};
+    $self->{_signuser}   = $options{signuser};
+    $self->{_signscript} = $options{signscript};
 }
 
 sub run {
     my ($self, $package, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
 
-    $package->sign(
-        $self->{_name},
-        $self->{_path},
-        $self->{_passphrase}
-    ) unless $self->{_test};
+    if (! $self->{_test}) {
+	system('/usr/bin/sudo', '-u', $self->{_signuser}, $self->{_signscript}, $package->{_file}, $self->{_name}, $self->{_path}) == 0;
+    }
 }
 
 =head1 COPYRIGHT AND LICENSE
