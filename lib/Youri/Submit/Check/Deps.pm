@@ -66,7 +66,9 @@ sub run {
     
     my $path = $repository->get_install_root() . "/" . $target;
     # FIXME we need dependencies on all archs except for ExclusiveArch
-    my $arch = 'i586';
+    # Unfortunately some dependencies depend on the arch were the src.rpm was geenrated
+    # Currently src.rpm is generated on x86_64, so we need to check on that one
+    my $arch = 'x86_64';
 #    foreach my $arch ($repository->get_extra_arches()) {
         my $media = new Youri::Media::URPM(name => "core.".$arch,
                                            type => "binary",
