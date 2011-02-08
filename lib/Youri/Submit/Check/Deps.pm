@@ -45,23 +45,10 @@ sub resolvedep {
             }
 	    $notfound;
         } @requires;
-	# Try to handle BuildRequires: kernel-server-2.6.37-3.mga-1-1.mga1
-	@requires = grep {
-	    my $require = $_;
-	    my $notfound = 1;
-	    if (!$require->[Youri::Package::DEPENDENCY_RANGE] &&
-		$require->[Youri::Package::DEPENDENCY_NAME] =~ /-/) {
-		foreach my $provide (@provides) {
-		    next unless $require->[Youri::Package::DEPENDENCY_NAME] =~ /^$provide->[Youri::Package::DEPENDENCY_NAME]-/;
-		    $notfound = 0;
-		}
-	    }
-	    $notfound;
-	} @requires;
     };
     $media->traverse_headers($index);
     foreach my $require (@requires) {
-         push (@errors, "Unresolved dep on " . $require->[Youri::Package::DEPENDENCY_NAME] . " " . $require->[Youri::Package::DEPENDENCY_RANGE]);
+	    push (@errors, "Unresolved dep on " . $require->[Youri::Package::DEPENDENCY_NAME]);
     }
     return @errors;
 }
