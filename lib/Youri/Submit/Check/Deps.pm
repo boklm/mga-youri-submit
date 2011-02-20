@@ -68,7 +68,10 @@ sub run {
     # FIXME we need dependencies on all archs except for ExclusiveArch
     # Unfortunately some dependencies depend on the arch were the src.rpm was geenrated
     # Currently src.rpm is generated on x86_64, so we need to check on that one
+    # If the package is not buildable on x86_64 we just don't test anything
     my $arch = 'x86_64';
+    my @exclusivearchs = $package->get_tag("exclusivearchs");
+    return if @exclusivearchs && ! (grep {$_ eq $arch} @exclusivearchs);
 #    foreach my $arch ($repository->get_extra_arches()) {
         my $media = new Youri::Media::URPM(name => "core.".$arch,
                                            type => "binary",
