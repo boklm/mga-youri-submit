@@ -48,7 +48,7 @@ sub resolvedep {
     };
     $media->traverse_headers($index);
     foreach my $require (@requires) {
-	    push (@errors, "Unresolved dep on " . $require->[Youri::Package::DEPENDENCY_NAME]);
+	    push (@errors, "Unresolved dep on " . $require->[Youri::Package::DEPENDENCY_NAME] . " " . $require->[Youri::Package::DEPENDENCY_RANGE]);
     }
     return @errors;
 }
