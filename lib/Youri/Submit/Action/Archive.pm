@@ -46,17 +46,6 @@ sub run {
     ) {
         my $file = $replaced_package->get_file();
 
-        # trap for debugging bug 34999
-        if ($file =~ /\/[\d.]+\/(main\/updates|.*\/release)/) {
-            my $bugmsg = "BUG#34999 WARNING: trying to remove from a release: $file\n";
-            open(BUG34999LOG, '>>', "/home/mandrake/bug34999.log");
-            print $bugmsg;
-            print BUG34999LOG localtime().": ".$bugmsg;
-            close BUG34999LOG;
-
-            next;
-        }
-
 	my ($rep_section, $rep_main_section) = $file =~ m,$path/(([^/]+)/.*)/[^/]+.rpm,;
 	# We do accept duplicate version for other submedia of the same main media section
 	print "(path '$path') file '$file' section '$rep_section' main_section '$rep_main_section'\n" if $self->{_verbose};
