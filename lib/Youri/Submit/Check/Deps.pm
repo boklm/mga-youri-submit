@@ -29,16 +29,16 @@ sub resolvedep {
 	    my $require = $_;
 	    my $notfound = 1;
             foreach my $provide (@provides) {
-                next unless $provide->[Youri::Package::DEPENDENCY_NAME] eq $require->[Youri::Package::DEPENDENCY_NAME];
-                if ($require->[Youri::Package::DEPENDENCY_RANGE]) {
-                    next unless $package->check_ranges_compatibility($provide->[Youri::Package::DEPENDENCY_RANGE], $require->[Youri::Package::DEPENDENCY_RANGE]);
+                next unless $provide->[Youri::Package::Relationship::NAME] eq $require->[Youri::Package::Relationship::NAME];
+                if ($require->[Youri::Package::Relationship::RANGE]) {
+                    next unless $package->check_ranges_compatibility($provide->[Youri::Package::Relationship::RANGE], $require->[Youri::Package::Relationship::RANGE]);
 	        }
 	        $notfound = 0;
 	    }
 
-            if ($notfound && $require->[Youri::Package::DEPENDENCY_NAME] =~ m|/|) {
+            if ($notfound && $require->[Youri::Package::Relationship::NAME] =~ m|/|) {
                 foreach my $file ($package->get_files()) {
-		    next unless $file eq $require->[Youri::Package::DEPENDENCY_NAME];
+		    next unless $file eq $require->[Youri::Package::Relationship::NAME];
 		    $notfound = 0;
 		    last;
 	        }
@@ -48,7 +48,7 @@ sub resolvedep {
     };
     $media->traverse_headers($index);
     foreach my $require (@requires) {
-	    push (@errors, "Unresolved dep on " . $require->[Youri::Package::DEPENDENCY_NAME] . " " . $require->[Youri::Package::DEPENDENCY_RANGE]);
+	    push (@errors, "Unresolved dep on " . $require->[Youri::Package::Relationship::NAME] . " " . $require->[Youri::Package::Relationship::RANGE]);
     }
     return @errors;
 }
