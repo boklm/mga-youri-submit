@@ -44,8 +44,7 @@ sub run {
     unless ($self->{_test}) {
         my $pkg_name = $package->get_name();
         my $pkg_media = $repository->_get_main_section($package, $target, $define);
-        $package->get_packager() =~ m/(\w[-_.\w]+\@[-_.\w]+)\W/;
-        my $pkg_commiter = $1;
+        my $pkg_commiter = $define->{user};
 
         my $ua = LWP::UserAgent->new;
         $ua->agent('Youri/0.1 ' . $ua->agent);
