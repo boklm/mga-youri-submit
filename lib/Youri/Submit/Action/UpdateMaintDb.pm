@@ -47,7 +47,7 @@ sub run {
         $package->get_packager() =~ m/(\w[-_.\w]+\@[-_.\w]+)\W/;
         my $pkg_commiter = $1;
 
-        $ua = LWP::UserAgent->new;
+        my $ua = LWP::UserAgent->new;
         $ua->agent('Youri/0.1 ' . $ua->agent);
 
         my $req = POST $self->{_maintdb_url},
