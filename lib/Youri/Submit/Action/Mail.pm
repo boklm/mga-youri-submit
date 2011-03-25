@@ -110,13 +110,24 @@ sub get_content {
     my ($self, $package, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
 
-    my $information = $package->get_information();
+    my $information = $package->as_formated_string(<<EOF);
+Name        : %-27{NAME}  Relocations: %|PREFIXES?{[%{PREFIXES} ]}:{(not relocatable)}|
+Version     : %-27{VERSION}       Vendor: %{VENDOR}
+Release     : %-27{RELEASE}   Build Date: %{BUILDTIME:date}
+Install Date: %|INSTALLTIME?{%-27{INSTALLTIME:date}}:{(not installed)         }|      Build Host: %{BUILDHOST}
+Group       : %-27{GROUP}   Source RPM: %{SOURCERPM}
+Size        : %-27{SIZE}%|LICENSE?{      License: %{LICENSE}}|
+Signature   : %|DSAHEADER?{%{DSAHEADER:pgpsig}}:{%|RSAHEADER?{%{RSAHEADER:pgpsig}}:{%|SIGGPG?{%{SIGGPG:pgpsig}}:{%|SIGPGP?{%{SIGPGP:pgpsig}}:{(none)}|}|}|}|
+%|PACKAGER?{Packager    : %{PACKAGER}\n}|%|URL?{URL         : %{URL}\n}|Summary     : %{SUMMARY}
+Description :\n%{DESCRIPTION}
+EOF
+
     my $last_change = $package->get_last_change();
 
     return
         $information . "\n" .
-        $last_change->[Youri::Package::CHANGE_AUTHOR] . ":\n" .
-	$last_change->[Youri::Package::CHANGE_TEXT];
+        $last_change->get_author() . ":\n" .
+	$last_change->get_raw_text();
 }
 
 
