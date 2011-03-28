@@ -33,7 +33,8 @@ sub run {
     }
     foreach my $arch (@changed) {
 	my $rpmsrate = "$root/$target/$arch/media/media_info/rpmsrate";
-	my @media = "$root/$target/$arch/media/main/release";
+	# FIXME: have a method to get core/release instead of hardcoding it
+	my @media = "$root/$target/$arch/media/core/release";
 	system("cp", "$rpmsrate-raw", "$rpmsrate-new");
 	system("clean-rpmsrate", "$rpmsrate-new", @media);
 	system("mv", "-f", "$rpmsrate-new", $rpmsrate);
