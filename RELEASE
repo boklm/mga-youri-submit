@@ -1,0 +1,4 @@
+To release a new version:
+- bump version in Makefile.PL
+- perl Makefile.PL
+- make manifest dist
