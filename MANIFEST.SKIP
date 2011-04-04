@@ -9,3 +9,4 @@
 ^bin/youri-submit-proxy$
 .svn
 blib
+deprecated
