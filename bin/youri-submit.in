@@ -79,10 +79,11 @@ Produce more verbose output (can be used more than once)
 
 Don't perform any modification.
 
-=item B<--list> I<category>
+=item B<--list> I<category> I[target]
  
 List available items from given category and exits. Category must be either
-B<targets>, B<actions> or B<checks>. A target is needed for the two last ones.
+B<targets>, B<actions>, B<checks>, B<posts> or B<rejects>.
+A target is needed except for B<targets>.
  
 =item B<--help> I<category>
  
@@ -186,17 +187,12 @@ if ($config->get_arg('list')) {
         unless $category;
     if ($category eq 'targets') { 
         print join(' ', keys %{$config->get_param('targets')});
-    } elsif ($category eq 'checks' || $category eq 'actions') {
+    } elsif ($category =~ /^(actions|checks|posts|rejects)$/) {
         my $target = $ARGV[1];
         pod2usage(-verbose => 0, -message => "No target specified, aborting\n")
             unless $target;
-        if ($category eq 'checks') {
-            my $checks = $config->get_param('targets')->{$target}->{checks};
-            print join(' ', @{$checks}) if $checks;
-        } else {
-            my $actions = $config->get_param('targets')->{$target}->{actions};
-            print join(' ', @{$actions}) if $actions;
-        }
+        my $items = $config->get_param('targets')->{$target}->{$category};
+        print join(' ', @{$items}) if $items;
     } else {
         pod2usage(-verbose => 0, -message => "Invalid category $category, aborting\n")
     }
