@@ -35,6 +35,11 @@ sub run {
 
     my $defined_section = $define->{section};
 
+    #FIXME We only search requested section to allow manual upload to multiple sections
+    # until the code handles it.
+
+    return @errors;
+
     # if the user provided a section, check also in the default section
     if ($defined_section) {
         $define->{section} = undef;
