@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-# $Id: youri-submit 232579 2007-12-17 19:45:47Z blino $
+# $Id: youri-submit.in 232668 2007-12-21 14:37:04Z blino $
 
 =head1 NAME
 
@@ -20,7 +20,6 @@ youri-submit --help [category] [item]
 Options:
 
     --config <file>        use file <file> as config file
-    --skip-pre <pre>       skip pre <pre>
     --skip-check <check>   skip check <check>
     --skip-action <action> skip action <action>
     --skip-post <post>     skip post <post>
@@ -47,10 +46,6 @@ passed to a list of action plugins, depending also on given upload target.
 =item B<--config> I<file>
 
 Use given file as configuration, instead of normal one.
-
-=item B<--skip-pre> I<id>
-
-Skip pre transaction plugin with given identity
 
 =item B<--skip-check> I<id>
 
@@ -84,10 +79,11 @@ Produce more verbose output (can be used more than once)
 
 Don't perform any modification.
 
-=item B<--list> I<category>
+=item B<--list> I<category> I[target]
  
 List available items from given category and exits. Category must be either
-B<targets>, B<actions> or B<checks>. A target is needed for the two last ones.
+B<targets>, B<actions>, B<checks>, B<posts> or B<rejects>.
+A target is needed except for B<targets>.
  
 =item B<--help> I<category>
  
@@ -178,7 +174,6 @@ my $config = Youri::Config->new(
         'test'        => '|t!',
         'list'        => '|l!',
         'config'      => '=s',
-        'skip-prei'   => '=s@',
         'skip-post'   => '=s@',
         'skip-reject' => '=s@',
     },
@@ -192,17 +187,12 @@ if ($config->get_arg('list')) {
         unless $category;
     if ($category eq 'targets') { 
         print join(' ', keys %{$config->get_param('targets')});
-    } elsif ($category eq 'checks' || $category eq 'actions') {
+    } elsif ($category =~ /^(actions|checks|posts|rejects)$/) {
         my $target = $ARGV[1];
         pod2usage(-verbose => 0, -message => "No target specified, aborting\n")
             unless $target;
-        if ($category eq 'checks') {
-            my $checks = $config->get_param('targets')->{$target}->{checks};
-            print join(' ', @{$checks}) if $checks;
-        } else {
-            my $actions = $config->get_param('targets')->{$target}->{actions};
-            print join(' ', @{$actions}) if $actions;
-        }
+        my $items = $config->get_param('targets')->{$target}->{$category};
+        print join(' ', @{$items}) if $items;
     } else {
         pod2usage(-verbose => 0, -message => "Invalid category $category, aborting\n")
     }
@@ -283,58 +273,10 @@ eval {
 };
 die "Failed to create repository: $@\n" if $@;
 
-# perfrom pre action
-my @errors;
-my $pre_packages = [];
-my $skip_pres = $config->get_arg('skip-pre');
-my %skip_pres = $skip_pres ?  map { $_ => 1 } @{$skip_pres} : ();
-foreach my $id (@{$target_conf->{pres}}) { 
-    next if $skip_pres{$id};
-    print "Creating pre $id\n" if $verbose;
-    my $pre;
-    my $pre_conf = $config->get_param('pres')->{$id};
-
-    if (!$pre_conf) {
-	print STDERR "No such pre $id, skipping\n";
-	next;
-    }
-    eval {
-	$pre = create_instance(
-	    'Youri::Submit::Pre',
-	    $pre_conf,
-	    {
-		id       => $id,
-		test     => $test,
-		verbose  => $verbose > 0 ? $verbose - 1 : 0,
-	    }
-	);
-    };
-    if ($@) {
-	print STDERR "Failed to create pre $id: $@\n";
-    } else {
-	print "running pre $id\n" if $verbose;
-	my @err = $pre->run(
-	    $pre_packages,
-	    $repository,
-	    $target,
-	    $config->get_arg('define')
-	);
-	push(@errors, @err) if $err[0];
-    }
-}
-
-if (@errors) {
-    print "Pre-submission errors, aborting:\n";
-    foreach my $error (@errors) {
-	print " - $error\n";
-    }
-    exit(1)
-}
-
 # create packages group
 my $group_error;
 my @packages_group;
-foreach my $group ([ map { { section => "", file => $_ } } @ARGV ], @$pre_packages) {
+foreach my $group ([ map { { section => "", file => $_ } } @ARGV ]) {
     my @packages;
     foreach my $opt (@$group) {
 	print "Preparing upload for $opt->{file} in $opt->{section}\n" if $verbose;
