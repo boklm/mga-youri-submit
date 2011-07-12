@@ -25,11 +25,13 @@ sub _init {
     my %options = (
         maintdb_url => '',
         maintdb_key => '',
+	maintdb_binpath => '/usr/local/sbin/maintdb',
         @_
     );
 
     $self->{_maintdb_url}     = $options{maintdb_url};
     $self->{_maintdb_key}     = $options{maintdb_key};
+    $self->{_maintdb_binpath} = $options{maintdb_binpath};
 
     return $self;
 }
@@ -45,6 +47,8 @@ sub run {
         my $pkg_name = $package->get_name();
         my $pkg_media = $repository->_get_main_section($package, $target, $define);
         my $pkg_commiter = $define->{user};
+
+	system($self->{_maintdb_binpath}, 'root', 'new', $pkg_name, $pkg_commiter);
 
         my $ua = LWP::UserAgent->new;
         $ua->agent('Youri/0.1 ' . $ua->agent);
