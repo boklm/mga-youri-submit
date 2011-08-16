@@ -23,15 +23,11 @@ use LWP::UserAgent;
 sub _init {
     my $self   = shift;
     my %options = (
-        maintdb_url => '',
-        maintdb_key => '',
 	maintdb_binpath => '/usr/local/sbin/maintdb',
 	maintdb_user => 'maintdb',
         @_
     );
 
-    $self->{_maintdb_url}     = $options{maintdb_url};
-    $self->{_maintdb_key}     = $options{maintdb_key};
     $self->{_maintdb_binpath} = $options{maintdb_binpath};
     $self->{_maintdb_user} = $options{maintdb_user};
 
@@ -51,26 +47,6 @@ sub run {
         my $pkg_commiter = $define->{user};
 
 	system('sudo', '-u', $self->{_maintdb_user}, $self->{_maintdb_binpath}, 'root', 'new', $pkg_name, $pkg_commiter);
-
-        my $ua = LWP::UserAgent->new;
-        $ua->agent('Youri/0.1 ' . $ua->agent);
-
-        my $req = POST $self->{_maintdb_url},
-                      [
-                        key     => $self->{_maintdb_key},
-                        from    => "youri",
-                        package => $pkg_name,
-                        media   => $pkg_media,
-                        uid     => $pkg_commiter
-                      ];
-
-        my $res = $ua->request($req);
-
-        if ($res->is_success) {
-            print "Updated package maintainers DB for '$pkg_name', '$pkg_media', '$pkg_commiter'.\n" if $self->{_verbose};
-        } else {
-            print "ERROR: POST failed to ".$self->{_maintdb_url}." for '$pkg_name', '$pkg_media', '$pkg_commiter'.\n";
-        }
     }
 }
 
