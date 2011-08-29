@@ -37,10 +37,7 @@ sub run {
     if ($repository->package_in_svn($srpm_name)) {
 	my $svn = $repository->get_svn_url();
 	my ($rev) = $file =~ /.*\/.*?\@(\d+):/;
-	print "Run repsys markrelease -f $file -r $rev $svn/$srpm_name\n";
-	# FIXME repsys ask for a username and password
-	# FIXME we should use the key in /var/home/mandrake so that /home/mandrake does not
-	# need to be mounted
+	print "Run mgarepo markrelease -f $file -r $rev $svn/$srpm_name\n";
 	system('mgarepo', 'markrelease', '-f', $file, '-r', $rev, "$svn/$srpm_name");
     }
     1
