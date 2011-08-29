@@ -41,7 +41,7 @@ sub run {
 	# FIXME repsys ask for a username and password
 	# FIXME we should use the key in /var/home/mandrake so that /home/mandrake does not
 	# need to be mounted
-	system('repsys', 'markrelease', '-f', $file, '-r', $rev, "$svn/$srpm_name");
+	system('mgarepo', 'markrelease', '-f', $file, '-r', $rev, "$svn/$srpm_name");
     }
     1
 }
