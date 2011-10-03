@@ -35,8 +35,8 @@ sub run {
 	my $rpmsrate = "$root/$target/$arch/media/media_info/rpmsrate";
 	# FIXME: have a method to get core/release instead of hardcoding it
 	my @media = "$root/$target/$arch/media/core/release";
-	system("cp", "$rpmsrate-raw", "$rpmsrate-new");
-	system("clean-rpmsrate", "$rpmsrate-new", @media);
+	system("clean-rpmsrate", "-o", "$rpmsrate-new", "$rpmsrate-raw", @media);
+	# FIXME: unlink instead of mv if the content did not change
 	system("mv", "-f", "$rpmsrate-new", $rpmsrate);
     }
     return
