@@ -37,8 +37,7 @@ sub run {
     my $main_section = $repository->_get_main_section($package, $target, $define);
     print "section $section main_section $main_section\n" if $self->{_verbose};
     my $arch = $package->get_arch();
-    $arch = $self->{_noarch} if $arch eq 'noarch';
-    my $path = $arch eq 'src' ? "$target/SRPMS" : "$target/$arch/media";
+    my $path = $arch eq 'src' ? "$target/SRPMS" : "$target/[^/]+/media";
     $path = "$repository->{_install_root}/$path";
     $path =~ s,/+,/,g;
     foreach my $replaced_package (
