@@ -75,7 +75,7 @@ sub run {
 #    foreach my $arch ($repository->get_extra_arches()) {
         my $media = new Youri::Media::URPM(name => "core.".$arch,
                                            type => "binary",
-					   hdlist => "$path/$arch/media/$section/media_info/hdlist.cz");
+					   synthesis => "$path/$arch/media/$section/media_info/synthesis.hdlist.cz");
     return resolvedep($media, @requires);
 #    }
 
