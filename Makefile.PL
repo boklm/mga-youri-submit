@@ -4,7 +4,7 @@ use Config;
 
 WriteMakefile(
     NAME       => 'youri-submit',
-    VERSION    => '0.9.1',
+    VERSION    => '0.9.2',
     AUTHOR     => 'Youri project <youri@zarb.org>',
     EXE_FILES  => [
         'bin/youri-submit',
