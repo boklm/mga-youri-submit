@@ -36,7 +36,7 @@ sub run {
     croak "Missing destination" unless $self->{'_destination'};
 
 
-    if (system("/usr/bin/rsync -alH --delete --delete-after $root/$target/ $self->{_destination}/$target/")) {
+    if (system("/usr/bin/rsync -alH --delete --delete-delay --delay-updates $root/$target/ $self->{_destination}/$target/")) {
 	$self->{_error} = "Rsync command failed ($!)";
     }
 
