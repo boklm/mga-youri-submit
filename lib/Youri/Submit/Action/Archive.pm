@@ -1,4 +1,4 @@
-# $Id: Archive.pm 265457 2010-01-28 13:09:30Z pterjan $
+# $Id$
 package Youri::Submit::Action::Archive;
 
 =head1 NAME

@@ -1,4 +1,4 @@
-# $Id: SVN.pm 4747 2007-01-30 10:02:41Z pixel $
+# $Id$
 package Youri::Submit::Check::SVN;
 
 =head1 NAME

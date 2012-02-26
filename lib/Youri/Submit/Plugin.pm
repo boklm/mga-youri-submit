@@ -1,4 +1,4 @@
-# $Id: Plugin.pm 4746 2007-01-30 10:01:14Z pixel $
+# $Id$
 package Youri::Submit::Plugin;
 
 =head1 NAME

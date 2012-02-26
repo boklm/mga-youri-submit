@@ -1,4 +1,4 @@
-# $Id: Rpmlint.pm 234384 2008-02-12 09:42:32Z blino $
+# $Id$
 package Youri::Submit::Check::Rpmlint;
 
 =head1 NAME

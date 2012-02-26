@@ -1,4 +1,4 @@
-# $Id: Gendistrib.pm 115367 2007-01-30 09:47:04Z pixel $
+# $Id$
 package Youri::Submit::Post::Genhdlist2;
 
 =head1 NAME

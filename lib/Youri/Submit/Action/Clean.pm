@@ -1,4 +1,4 @@
-# $Id: Clean.pm 4742 2007-01-30 09:49:58Z pixel $
+# $Id$
 package Youri::Submit::Action::Clean;
 
 =head1 NAME

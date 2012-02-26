@@ -1,4 +1,4 @@
-# $Id: Mail.pm 223952 2007-06-23 13:54:13Z pixel $
+# $Id$
 package Youri::Submit::Reject::Mail;
 
 =head1 NAME

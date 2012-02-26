@@ -1,4 +1,4 @@
-# $Id: Link.pm 233641 2008-01-31 16:35:55Z pixel $
+# $Id$
 package Youri::Submit::Action::Link;
 
 =head1 NAME

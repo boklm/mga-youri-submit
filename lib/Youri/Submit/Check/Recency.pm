@@ -1,4 +1,4 @@
-# $Id: Recency.pm 224793 2007-07-08 02:44:48Z spuk $
+# $Id$
 package Youri::Submit::Check::Recency;
 
 =head1 NAME

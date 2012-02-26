@@ -1,4 +1,4 @@
-# $Id: Sendcache.pm 232350 2007-12-07 18:26:17Z spuk $
+# $Id$
 package Youri::Submit::Action::Sendcache;
 
 =head1 NAME

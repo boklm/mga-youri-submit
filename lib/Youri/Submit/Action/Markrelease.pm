@@ -1,4 +1,4 @@
-# $Id: Markrelease.pm 4743 2007-01-30 09:58:30Z pixel $
+# $Id$
 package Youri::Submit::Action::Markrelease;
 
 =head1 NAME

@@ -1,4 +1,4 @@
-# $Id: CVS.pm 224115 2007-07-02 09:17:15Z pixel $
+# $Id$
 package Youri::Submit::Action::CVS;
 
 =head1 NAME

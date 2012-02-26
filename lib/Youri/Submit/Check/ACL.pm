@@ -1,4 +1,4 @@
-# $Id: ACL.pm 4817 2007-02-09 19:39:05Z blino $
+# $Id$
 package Youri::Submit::Check::ACL;
 
 =head1 NAME

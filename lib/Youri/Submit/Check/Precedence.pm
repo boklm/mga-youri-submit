@@ -1,4 +1,4 @@
-# $Id: Precedence.pm 1707 2006-10-16 16:26:42Z warly $
+# $Id$
 package Youri::Submit::Check::Precedence;
 
 =head1 NAME

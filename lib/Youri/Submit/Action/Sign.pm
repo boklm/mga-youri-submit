@@ -1,4 +1,4 @@
-# $Id: Sign.pm 1700 2006-10-16 12:57:42Z warly $
+# $Id$
 package Youri::Submit::Action::Sign;
 
 =head1 NAME

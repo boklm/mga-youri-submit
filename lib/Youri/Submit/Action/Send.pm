@@ -1,4 +1,4 @@
-# $Id: Send.pm 4744 2007-01-30 09:59:07Z pixel $
+# $Id$
 package Youri::Submit::Action::Send;
 
 =head1 NAME

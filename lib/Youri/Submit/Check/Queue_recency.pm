@@ -1,4 +1,4 @@
-# $Id: Queue_recency.pm 4747 2007-01-30 10:02:41Z pixel $
+# $Id$
 package Youri::Submit::Check::Queue_recency;
 
 =head1 NAME

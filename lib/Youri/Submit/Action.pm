@@ -1,4 +1,4 @@
-# $Id: Base.pm 631 2006-01-26 22:22:23Z guillomovitch $
+# $Id$
 package Youri::Submit::Action;
 
 =head1 NAME

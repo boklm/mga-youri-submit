@@ -1,4 +1,4 @@
-# $Id: Host.pm 230850 2007-10-04 20:07:25Z blino $
+# $Id$
 package Youri::Submit::Check::Host;
 
 =head1 NAME

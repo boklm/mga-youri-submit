@@ -1,4 +1,4 @@
-# $Id: Install.pm 229772 2007-09-26 11:21:07Z blino $
+# $Id$
 package Youri::Submit::Action::Install;
 
 =head1 NAME

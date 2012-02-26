@@ -1,4 +1,4 @@
-# $Id: Rpminfo.pm 4742 2007-01-30 09:49:58Z pixel $
+# $Id$
 package Youri::Submit::Action::Rpminfo;
 
 =head1 NAME

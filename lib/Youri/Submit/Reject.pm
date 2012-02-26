@@ -1,4 +1,4 @@
-# $Id: Reject.pm 4746 2007-01-30 10:01:14Z pixel $
+# $Id$
 package Youri::Submit::Reject;
 
 =head1 NAME

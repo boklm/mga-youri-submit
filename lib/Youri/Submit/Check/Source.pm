@@ -1,4 +1,4 @@
-# $Id: Source.pm 4747 2007-01-30 10:02:41Z pixel $
+# $Id$
 package Youri::Submit::Check::Source;
 
 =head1 NAME

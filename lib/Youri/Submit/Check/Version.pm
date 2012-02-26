@@ -1,4 +1,4 @@
-# $Id: Version.pm 267050 2010-03-23 17:36:49Z nvigier $
+# $Id$
 package Youri::Submit::Check::Version;
 
 =head1 NAME
