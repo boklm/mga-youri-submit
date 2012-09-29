@@ -1,4 +1,4 @@
-# $Id$
+# $Id: Rpmlint.pm 234384 2008-02-12 09:42:32Z blino $
 package Youri::Submit::Check::Rpmlint;
 
 =head1 NAME
@@ -51,12 +51,11 @@ sub _init {
         @_
     );
 
-    croak "no results to check" unless $options{results};
-    croak "fatal should be an arrayref" unless ref $options{results} eq 'ARRAY';
 
-    $self->{_config} = $options{config};
-    $self->{_path} = $options{path};
-    $self->{_pattern} = '^(?:' . join('|', @{$options{results}}) . ')$';
+    $self->{opt} = sub {
+	    my ($name, $target) = @_;
+	    (exists $options{$target}->{$name}) ? $options{$target}->{$name} : $options{$name};
+    };
 }
 
 sub run {
@@ -65,6 +64,12 @@ sub run {
 
     my @errors;
 
+    my $results = $self->{opt}->('results', $_target);
+    croak "no results to check" unless $results;
+    croak "fatal should be an arrayref" unless ref $results eq 'ARRAY';
+    $self->{_config} = $self->{opt}->('config', $_target);
+    $self->{_path} = $self->{opt}->('path', $_target);
+    $self->{_pattern} = '^(?:' . join('|', @$results) . ')$';
     my $command = "$self->{_path} -f $self->{_config} " . $package->as_file;
     open(my $RPMLINT, "$command |") or die "Can't run $command: $!";
     while (my $line = <$RPMLINT>) {
