@@ -43,7 +43,7 @@ sub run {
     foreach my $replaced_package (
         $repository->get_replaced_packages($package, $target, $define)
     ) {
-        my $file = $replaced_package->get_file();
+        my $file = $replaced_package->as_file();
 
 	my ($rep_section, $rep_main_section) = $file =~ m,$path/(([^/]+)/.*)/[^/]+.rpm,;
 	# We do accept duplicate version for other submedia of the same main media section

@@ -29,7 +29,7 @@ sub _init {
 sub run {
     my ($self, $package, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
-    my $file = $package->get_full_name();
+    my $file = $package->as_string();
     my $arch = $package->get_arch();
     my $srpm = $package->get_canonical_name;
     my $section = $repository->_get_section($package, $target, $define);

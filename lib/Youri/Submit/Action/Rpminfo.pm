@@ -41,7 +41,7 @@ sub run {
     my ($self, $package, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
 
-    my $file = $package->get_file();
+    my $file = $package->as_file();
     my $dest = $repository->get_upload_dir($package, $target, $define);
 
     print "Caching rpm information $file on $dest\n" if $self->{_verbose};

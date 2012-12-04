@@ -20,7 +20,7 @@ sub run {
     my ($self, $package, $errors, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
 
-    my $file = $package->get_file();
+    my $file = $package->as_file();
     print "deleting file $file\n" if $self->{_verbose};
     unlink $file unless $self->{_test};
 }

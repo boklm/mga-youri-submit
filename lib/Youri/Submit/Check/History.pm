@@ -42,7 +42,7 @@ sub run {
         unless ($entries{$last_revision_number}) {
             push(
                 @errors,
-                "Last changelog entry $last_revision_number from last revision " . $last_revision->get_full_name() . "  missing from current changelog"
+                "Last changelog entry $last_revision_number from last revision " . $last_revision->as_string() . "  missing from current changelog"
             );
         }
     }

@@ -31,7 +31,7 @@ sub run {
     croak "Not a class method" unless ref $self;
 
     $package->is_source or return 1;
-    my $file = $package->get_file();
+    my $file = $package->as_file();
     my $srpm_name = $package->get_canonical_name;
 
     if ($repository->package_in_svn($srpm_name)) {

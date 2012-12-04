@@ -46,7 +46,7 @@ sub run {
     # only cache debug packages if option debug_pkgs is true
     return if ($package->is_debug() && !$self->{_debug_pkgs});
 
-    my $file = $package->get_file();
+    my $file = $package->as_file();
     my $dest = $repository->get_upload_dir($package, $target, $define);
     $dest =~ s!$repository->{_upload_root}/$repository->{_queue}!$self->{_root}!;
 

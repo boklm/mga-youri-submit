@@ -32,7 +32,7 @@ sub run {
     my ($self, $package, $errors, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
 
-    my $file = $package->get_file();
+    my $file = $package->as_file();
     my $rpm = $package->get_file_name();
     my $dest = $repository->get_reject_dir($package, $target, $define);
 

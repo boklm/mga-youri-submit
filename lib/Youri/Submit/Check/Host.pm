@@ -29,7 +29,7 @@ sub _init {
 sub run {
     my ($self, $package, $repository, $target, $define) = @_;
     croak "Not a class method" unless ref $self;
-    my $file = $package->get_file;
+    my $file = $package->as_file;
     my $arch = $package->get_arch;
     my $buildhost = $package->as_formated_string('%{buildhost}');
     foreach my $h (keys %$host) {
