@@ -4,8 +4,8 @@ use Config;
 
 WriteMakefile(
     NAME       => 'youri-submit',
-    VERSION    => '0.9.2',
-    AUTHOR     => 'Youri project <youri@zarb.org>',
+    VERSION    => '0.9.3',
+    AUTHOR     => 'Mageia Sysadmin Team <mageia-sysadm@mageia.org>',
     EXE_FILES  => [
         'bin/youri-submit',
         'bin/youri-submit-restricted',
