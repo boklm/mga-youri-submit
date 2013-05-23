@@ -65,8 +65,8 @@ sub run {
     my @errors;
 
     my $results = $self->{opt}->('results', $_target);
-    croak "no results to check" unless $results;
-    croak "fatal should be an arrayref" unless ref $results eq 'ARRAY';
+    croak "rpmlint check: no results to check" unless $results;
+    croak "rpmlint check: fatal should be an arrayref" unless ref $results eq 'ARRAY';
     $self->{_config} = $self->{opt}->('config', $_target);
     $self->{_path} = $self->{opt}->('path', $_target);
     $self->{_pattern} = '^(?:' . join('|', @$results) . ')$';
